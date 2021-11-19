@@ -3,6 +3,7 @@ import requests
 import config
 
 SHEETY_PRICES_ENDPOINT = "https://api.sheety.co/1535b87ed86e1f83ec9c3d5640e64173/flightDeals/prices"
+SHEETY_USERS_ENDPOINT = "https://api.sheety.co/1535b87ed86e1f83ec9c3d5640e64173/flightDeals/users"
 
 headers = {
     "Authorization": f'Bearer {config.TOKEN}'
@@ -13,6 +14,7 @@ class DataManager:
 
     def __init__(self):
         self.destination_data = {}
+        self.user_data = {}
 
     def get_destination_data(self):
         response = requests.get(
@@ -36,3 +38,9 @@ class DataManager:
                 headers=headers
             )
             print(response.text)
+
+    def get_user_emails(self):
+        response = requests.get(url=SHEETY_USERS_ENDPOINT, headers=headers)
+        data = response.json()
+        self.user_data = data["users"]
+        return self.user_data

@@ -5,6 +5,7 @@ from notification_manager import NotificationManager
 
 data_manager = DataManager()
 sheet_data = data_manager.get_destination_data()
+user_data = data_manager.get_user_emails()
 flight_search = FlightSearch()
 notification_manager = NotificationManager()
 
@@ -29,9 +30,10 @@ for destination in sheet_data:
     if not flight:
         continue
     elif flight.price < destination["lowestPrice"]:
-        message = f"Low price alert! Only ${flight.price} to fly from {flight.origin_city}-{flight.origin_airport} to {flight.destination_city}-{flight.destination_airport}, from {flight.out_date} to {flight.return_date}."
+        emails = [row["email"] for row in user_data]
+        message = f'Low price alert! Only ${flight.price} to fly from {flight.origin_city}-{flight.origin_airport} to {flight.destination_city}-{flight.destination_airport}, from {flight.out_date} to {flight.return_date}.'
+        link = f"https://www.google.co.uk/flights?hl=en#flt={flight.origin_airport}.{flight.destination_airport}.{flight.out_date}*{flight.origin_airport}.{flight.destination_airport}.{flight.return_date}"
         if flight.stop_overs == 1:
             message += f"\nFlight has 1 stop over, via {flight.via_city}"
-        notification_manager.send_sms(
-            message=message
-        )
+
+        notification_manager.send_emails(emails, message, link)
